@@ -7,3 +7,5 @@
 3. Hooks - useState(), useRef(), useCallback() 사용
 4. Library - react-icons, classnames 사용
 5. css - scss 사용
+
+[출처][참고] react-book: 리액트를 다루는 기술
