@@ -1,23 +1,39 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useReducer, useRef, useCallback } from "react";
 import TodoTemplate from "./components/TodoTemplate";
 import TodoInsert from "./components/TodoInsert";
 import TodoList from "./components/TodoList";
+import { dispatch } from "../../../../../Library/Caches/typescript/3.7/node_modules/rxjs/internal/observable/range";
+
+//아주 많은 데이터 렌더링하기
+const createBulkTodos = () => {
+  const array = [];
+  for (let i = 0; i <= 2500; i++) {
+    array.push({
+      id: i,
+      text: `할 일 ${i}`,
+      checked: false,
+    });
+  }
+  return array;
+};
+
+const todoReducer = (todos, action) => {
+  switch (action.type) {
+    case "INSERT":
+      return todos.concat(action.todo);
+    case "REMOVE":
+      return todos.filter(todo => todo.id !== action.id);
+    case "TOGGLE":
+      return todos.map(todo =>
+        todo.id === action.id ? { ...todo, checked: !todo.checked } : todo,
+      );
+    default:
+      return todos;
+  }
+};
 
 function App() {
-  //아주 많은 데이터 렌더링하기
-  const createBulkTodos = () => {
-    const array = [];
-    for (let i = 0; i <= 2500; i++) {
-      array.push({
-        id: i,
-        text: `할 일 ${i}`,
-        checked: false,
-      });
-    }
-    return array;
-  };
-
-  const [todos, setTodos] = useState(createBulkTodos);
+  const [todos, setTodos] = useReducer(todoReducer, undefined, createBulkTodos);
 
   const nextId = useRef(2501);
 
@@ -27,20 +43,16 @@ function App() {
       text,
       checked: false,
     };
-    setTodos(todos => todos.concat(todo));
+    dispatch({ type: "INSERT", todo });
     nextId.current += 1;
   }, []);
 
   const onRemove = useCallback(id => {
-    setTodos(todos => todos.filter(todo => todo.id !== id));
+    dispatch({ type: "REMOVE", id });
   }, []);
 
   const onToggle = useCallback(id => {
-    setTodos(todos =>
-      todos.map(todo =>
-        todo.id === id ? { ...todo, checked: !todo.checked } : todo,
-      ),
-    );
+    dispatch({ type: "TOGGLE", id });
   }, []);
 
   return (
