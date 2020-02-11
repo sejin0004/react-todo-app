@@ -33,7 +33,7 @@ const todoReducer = (todos, action) => {
 };
 
 function App() {
-  const [todos, setTodos] = useReducer(todoReducer, undefined, createBulkTodos);
+  const [todos, dispatch] = useReducer(todoReducer, undefined, createBulkTodos);
 
   const nextId = useRef(2501);
 
